@@ -1,0 +1,6 @@
+{
+  "name": "BuienAlarm Card",
+  "filename": "buienalarm-card.js",
+  "render_readme": true,
+  "homeassistant": "2024.12.0"
+}
