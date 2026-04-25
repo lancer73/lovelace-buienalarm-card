@@ -1,0 +1,16 @@
+# Editor / OS files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local development
+node_modules/
+dist/
+*.log
+
+# Local previews and build artefacts
+preview*.svg
+preview*.png
+*.tmp
