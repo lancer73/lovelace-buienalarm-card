@@ -35,12 +35,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integration (driven by its `language` config option) and is displayed
   as-is by the card; the card's own UI language is independent.
 
-### Notes
+### Notes on translation quality
 
-- Translations for languages other than English and Dutch are
-  machine-quality starting points and have not been reviewed by native
-  speakers. Native-speaker PRs are welcome — strings live in the
-  `TRANSLATIONS` object at the top of `buienalarm-card.js`.
+The legend's "trace" band represents precipitation below the user's
+light threshold — meteorologically, drizzle (< ~0.5 mm/h, very fine
+drops). The translated labels use each language's native word for
+drizzle rather than a literal calque of the English word "trace"
+(which in most of these languages means "track" or "footprint" and
+would read incorrectly in a weather UI):
+
+- `nl`: motregen
+- `fr`: bruine
+- `es`: llovizna
+- `pt`: chuvisco
+- `pt-br`: garoa
+- `fy`: motrein
+- `tr`: çisenti
+- `ar`: رذاذ
+- `de` / `de-ch`: Nieselregen
+
+Translations for languages other than English and Dutch are
+machine-quality starting points and have not been reviewed by native
+speakers. Native-speaker PRs are welcome — strings live in the
+`TRANSLATIONS` object at the top of `buienalarm-card.js`.
 
 ## [1.1.1] - 2026-04-25
 

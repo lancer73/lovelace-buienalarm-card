@@ -42,6 +42,20 @@ const CARD_VERSION = "1.2.0";
 // and add the code to the lookup. Keep keys identical across languages.
 
 const TRANSLATIONS = {
+  // Notes on the legend labels:
+  //
+  // - The card's "trace" band represents precipitation that's detected
+  //   but below the user's `light` threshold. In meteorological terms
+  //   that's drizzle: very fine drops, < ~0.5 mm/h. So "trace" is
+  //   translated using each language's native word for drizzle, not a
+  //   literal calque of the English word "trace" (which would mean
+  //   "track/footprint" in most of these languages and look out of
+  //   place in a weather UI).
+  // - The other three bands (light/moderate/heavy) are adjectives
+  //   describing rain intensity, so they take adjective forms in
+  //   languages that distinguish (e.g. Spanish "ligera/moderada/fuerte"
+  //   agreeing with feminine "lluvia"; German "leicht/mäßig/stark"
+  //   uncapitalised because they're adjectives, not nouns).
   en: {
     default_title: "Rain forecast",
     period_wet: "shower expected",
@@ -75,7 +89,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entiteit niet gevonden: {entity}",
     no_data: "Nog geen voorspelling beschikbaar.",
     state_unknown: "onbekend",
-    legend_trace: "spoor",
+    legend_trace: "motregen",
     legend_light: "licht",
     legend_moderate: "matig",
     legend_heavy: "zwaar",
@@ -101,7 +115,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entité introuvable : {entity}",
     no_data: "Aucune donnée de prévision disponible.",
     state_unknown: "inconnu",
-    legend_trace: "trace",
+    legend_trace: "bruine",
     legend_light: "léger",
     legend_moderate: "modéré",
     legend_heavy: "fort",
@@ -126,7 +140,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entidad no encontrada: {entity}",
     no_data: "Aún no hay datos de previsión.",
     state_unknown: "desconocido",
-    legend_trace: "traza",
+    legend_trace: "llovizna",
     legend_light: "ligera",
     legend_moderate: "moderada",
     legend_heavy: "fuerte",
@@ -151,7 +165,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entidade não encontrada: {entity}",
     no_data: "Ainda não há dados de previsão.",
     state_unknown: "desconhecido",
-    legend_trace: "vestígio",
+    legend_trace: "chuvisco",
     legend_light: "fraca",
     legend_moderate: "moderada",
     legend_heavy: "forte",
@@ -176,7 +190,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entidade não encontrada: {entity}",
     no_data: "Ainda não há dados de previsão.",
     state_unknown: "desconhecido",
-    legend_trace: "traço",
+    legend_trace: "garoa",
     legend_light: "fraca",
     legend_moderate: "moderada",
     legend_heavy: "forte",
@@ -201,7 +215,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entiteit net fûn: {entity}",
     no_data: "Noch gjin foarsizzing beskikber.",
     state_unknown: "ûnbekend",
-    legend_trace: "spoar",
+    legend_trace: "motrein",
     legend_light: "licht",
     legend_moderate: "matich",
     legend_heavy: "swier",
@@ -226,7 +240,7 @@ const TRANSLATIONS = {
     entity_not_found: "Varlık bulunamadı: {entity}",
     no_data: "Henüz tahmin verisi yok.",
     state_unknown: "bilinmiyor",
-    legend_trace: "iz",
+    legend_trace: "çisenti",
     legend_light: "hafif",
     legend_moderate: "orta",
     legend_heavy: "şiddetli",
@@ -251,7 +265,7 @@ const TRANSLATIONS = {
     entity_not_found: "الكيان غير موجود: {entity}",
     no_data: "لا تتوفر بيانات توقعات بعد.",
     state_unknown: "غير معروف",
-    legend_trace: "أثر",
+    legend_trace: "رذاذ",
     legend_light: "خفيف",
     legend_moderate: "متوسط",
     legend_heavy: "غزير",
@@ -276,7 +290,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entität nicht gefunden: {entity}",
     no_data: "Noch keine Vorhersagedaten verfügbar.",
     state_unknown: "unbekannt",
-    legend_trace: "Spur",
+    legend_trace: "Nieselregen",
     legend_light: "leicht",
     legend_moderate: "mäßig",
     legend_heavy: "stark",
@@ -302,7 +316,7 @@ const TRANSLATIONS = {
     entity_not_found: "Entität nicht gefunden: {entity}",
     no_data: "Noch keine Vorhersagedaten verfügbar.",
     state_unknown: "unbekannt",
-    legend_trace: "Spur",
+    legend_trace: "Nieselregen",
     legend_light: "leicht",
     legend_moderate: "mässig",
     legend_heavy: "stark",
