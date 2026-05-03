@@ -21,7 +21,350 @@
  * License: MIT
  */
 
-const CARD_VERSION = "1.1.1";
+const CARD_VERSION = "1.2.0";
+
+// ---------------------------------------------------------------------------
+// Translations
+// ---------------------------------------------------------------------------
+//
+// The card translates its own UI strings (title default, period sub-text,
+// editor labels, legend, error/empty states) into the same set of languages
+// the ha-buienalarm integration supports. The headline state value itself
+// is translated by the integration server-side (it follows the per-entry
+// `language` config option), so we don't translate that here.
+//
+// Language is picked from hass.locale.language with a fallback to
+// hass.language. Lookup is case-insensitive and falls back to the base
+// language (e.g. "de-CH" -> "de") and then to English. This mirrors
+// resolve_language() in the integration.
+//
+// To add a language: copy the "en" block below, translate every value,
+// and add the code to the lookup. Keep keys identical across languages.
+
+const TRANSLATIONS = {
+  en: {
+    default_title: "Rain forecast",
+    period_wet: "shower expected",
+    period_dry: "current shower will end",
+    period_nan: "no transition in window",
+    entity_not_found: "Entity not found: {entity}",
+    no_data: "No forecast data available yet.",
+    state_unknown: "unknown",
+    legend_trace: "trace",
+    legend_light: "light",
+    legend_moderate: "moderate",
+    legend_heavy: "heavy",
+    aria_chart: "Rain forecast",
+    unit_mmh: "mm/h",
+    ed_title: "Title",
+    ed_next_shower_sensor: "Next shower sensor",
+    ed_show_headline: "Show headline",
+    ed_color_bars: "Color bars",
+    ed_light: "Light threshold",
+    ed_moderate: "Moderate threshold",
+    ed_heavy: "Heavy threshold",
+    ed_help: "Tip: to use a fixed numeric threshold instead of a sensor, switch to the YAML editor and enter a number (e.g. light: 0.1).",
+    card_description: "Rain forecast card for the ha-buienalarm integration. Shows the next-shower status and a coloured precipitation chart with light/moderate/heavy threshold lines.",
+    card_name: "BuienAlarm Card",
+  },
+  nl: {
+    default_title: "Regenvoorspelling",
+    period_wet: "bui verwacht",
+    period_dry: "huidige bui stopt",
+    period_nan: "geen overgang binnen venster",
+    entity_not_found: "Entiteit niet gevonden: {entity}",
+    no_data: "Nog geen voorspelling beschikbaar.",
+    state_unknown: "onbekend",
+    legend_trace: "spoor",
+    legend_light: "licht",
+    legend_moderate: "matig",
+    legend_heavy: "zwaar",
+    aria_chart: "Regenvoorspelling",
+    unit_mmh: "mm/u",
+    ed_title: "Titel",
+    ed_next_shower_sensor: "Sensor volgende bui",
+    ed_show_headline: "Kop tonen",
+    ed_color_bars: "Gekleurde balken",
+    ed_light: "Drempel licht",
+    ed_moderate: "Drempel matig",
+    ed_heavy: "Drempel zwaar",
+    ed_help: "Tip: om een vaste numerieke drempel te gebruiken in plaats van een sensor, schakel over naar de YAML-editor en voer een getal in (bijv. light: 0.1).",
+    card_description: "Regenvoorspellingskaart voor de ha-buienalarm integratie. Toont de status van de volgende bui en een gekleurde neerslaggrafiek met drempellijnen voor licht/matig/zwaar.",
+    card_name: "BuienAlarm Kaart",
+  },
+  // --- machine-quality translations below; native-speaker PRs welcome ---
+  fr: {
+    default_title: "Prévision de pluie",
+    period_wet: "averse attendue",
+    period_dry: "fin de l'averse en cours",
+    period_nan: "aucune transition dans la fenêtre",
+    entity_not_found: "Entité introuvable : {entity}",
+    no_data: "Aucune donnée de prévision disponible.",
+    state_unknown: "inconnu",
+    legend_trace: "trace",
+    legend_light: "léger",
+    legend_moderate: "modéré",
+    legend_heavy: "fort",
+    aria_chart: "Prévision de pluie",
+    unit_mmh: "mm/h",
+    ed_title: "Titre",
+    ed_next_shower_sensor: "Capteur de prochaine averse",
+    ed_show_headline: "Afficher le titre",
+    ed_color_bars: "Barres colorées",
+    ed_light: "Seuil léger",
+    ed_moderate: "Seuil modéré",
+    ed_heavy: "Seuil fort",
+    ed_help: "Astuce : pour utiliser un seuil numérique fixe au lieu d'un capteur, passez à l'éditeur YAML et saisissez un nombre (par ex. light: 0.1).",
+    card_description: "Carte de prévision de pluie pour l'intégration ha-buienalarm. Affiche l'état de la prochaine averse et un graphique coloré des précipitations avec des lignes de seuil léger/modéré/fort.",
+    card_name: "Carte BuienAlarm",
+  },
+  es: {
+    default_title: "Previsión de lluvia",
+    period_wet: "se espera lluvia",
+    period_dry: "fin de la lluvia actual",
+    period_nan: "sin transición en la ventana",
+    entity_not_found: "Entidad no encontrada: {entity}",
+    no_data: "Aún no hay datos de previsión.",
+    state_unknown: "desconocido",
+    legend_trace: "traza",
+    legend_light: "ligera",
+    legend_moderate: "moderada",
+    legend_heavy: "fuerte",
+    aria_chart: "Previsión de lluvia",
+    unit_mmh: "mm/h",
+    ed_title: "Título",
+    ed_next_shower_sensor: "Sensor de próxima lluvia",
+    ed_show_headline: "Mostrar encabezado",
+    ed_color_bars: "Barras de color",
+    ed_light: "Umbral ligero",
+    ed_moderate: "Umbral moderado",
+    ed_heavy: "Umbral fuerte",
+    ed_help: "Consejo: para usar un umbral numérico fijo en lugar de un sensor, cambia al editor YAML e introduce un número (p. ej. light: 0.1).",
+    card_description: "Tarjeta de previsión de lluvia para la integración ha-buienalarm. Muestra el estado de la próxima lluvia y un gráfico de precipitación coloreado con líneas de umbral ligero/moderado/fuerte.",
+    card_name: "Tarjeta BuienAlarm",
+  },
+  pt: {
+    default_title: "Previsão de chuva",
+    period_wet: "aguaceiro previsto",
+    period_dry: "fim do aguaceiro atual",
+    period_nan: "sem transição na janela",
+    entity_not_found: "Entidade não encontrada: {entity}",
+    no_data: "Ainda não há dados de previsão.",
+    state_unknown: "desconhecido",
+    legend_trace: "vestígio",
+    legend_light: "fraca",
+    legend_moderate: "moderada",
+    legend_heavy: "forte",
+    aria_chart: "Previsão de chuva",
+    unit_mmh: "mm/h",
+    ed_title: "Título",
+    ed_next_shower_sensor: "Sensor de próximo aguaceiro",
+    ed_show_headline: "Mostrar cabeçalho",
+    ed_color_bars: "Barras coloridas",
+    ed_light: "Limiar fraco",
+    ed_moderate: "Limiar moderado",
+    ed_heavy: "Limiar forte",
+    ed_help: "Dica: para usar um limiar numérico fixo em vez de um sensor, mude para o editor YAML e insira um número (p. ex. light: 0.1).",
+    card_description: "Cartão de previsão de chuva para a integração ha-buienalarm. Mostra o estado do próximo aguaceiro e um gráfico de precipitação colorido com linhas de limiar fraco/moderado/forte.",
+    card_name: "Cartão BuienAlarm",
+  },
+  "pt-br": {
+    default_title: "Previsão de chuva",
+    period_wet: "chuva prevista",
+    period_dry: "fim da chuva atual",
+    period_nan: "sem transição na janela",
+    entity_not_found: "Entidade não encontrada: {entity}",
+    no_data: "Ainda não há dados de previsão.",
+    state_unknown: "desconhecido",
+    legend_trace: "traço",
+    legend_light: "fraca",
+    legend_moderate: "moderada",
+    legend_heavy: "forte",
+    aria_chart: "Previsão de chuva",
+    unit_mmh: "mm/h",
+    ed_title: "Título",
+    ed_next_shower_sensor: "Sensor da próxima chuva",
+    ed_show_headline: "Mostrar cabeçalho",
+    ed_color_bars: "Barras coloridas",
+    ed_light: "Limite fraco",
+    ed_moderate: "Limite moderado",
+    ed_heavy: "Limite forte",
+    ed_help: "Dica: para usar um limite numérico fixo em vez de um sensor, mude para o editor YAML e digite um número (ex. light: 0.1).",
+    card_description: "Cartão de previsão de chuva para a integração ha-buienalarm. Mostra o estado da próxima chuva e um gráfico de precipitação colorido com linhas de limite fraco/moderado/forte.",
+    card_name: "Cartão BuienAlarm",
+  },
+  fy: {
+    default_title: "Reinfoarsizzing",
+    period_wet: "bui ferwachte",
+    period_dry: "hjoeddeistige bui einiget",
+    period_nan: "gjin oergong binnen finster",
+    entity_not_found: "Entiteit net fûn: {entity}",
+    no_data: "Noch gjin foarsizzing beskikber.",
+    state_unknown: "ûnbekend",
+    legend_trace: "spoar",
+    legend_light: "licht",
+    legend_moderate: "matich",
+    legend_heavy: "swier",
+    aria_chart: "Reinfoarsizzing",
+    unit_mmh: "mm/o",
+    ed_title: "Titel",
+    ed_next_shower_sensor: "Sensor folgjende bui",
+    ed_show_headline: "Kop sjen litte",
+    ed_color_bars: "Kleurde balken",
+    ed_light: "Drompel licht",
+    ed_moderate: "Drompel matich",
+    ed_heavy: "Drompel swier",
+    ed_help: "Tip: om in fêste numerike drompel te brûken yn stee fan in sensor, skeakelje nei de YAML-editor en fier in getal yn (bgl. light: 0.1).",
+    card_description: "Reinfoarsizzingskaart foar de ha-buienalarm yntegraasje. Lit de status fan de folgjende bui sjen en in kleurde delslachgrafyk mei drompels foar licht/matich/swier.",
+    card_name: "BuienAlarm Kaart",
+  },
+  tr: {
+    default_title: "Yağmur tahmini",
+    period_wet: "yağmur bekleniyor",
+    period_dry: "mevcut yağmur sona erecek",
+    period_nan: "pencerede geçiş yok",
+    entity_not_found: "Varlık bulunamadı: {entity}",
+    no_data: "Henüz tahmin verisi yok.",
+    state_unknown: "bilinmiyor",
+    legend_trace: "iz",
+    legend_light: "hafif",
+    legend_moderate: "orta",
+    legend_heavy: "şiddetli",
+    aria_chart: "Yağmur tahmini",
+    unit_mmh: "mm/sa",
+    ed_title: "Başlık",
+    ed_next_shower_sensor: "Sonraki yağmur sensörü",
+    ed_show_headline: "Başlığı göster",
+    ed_color_bars: "Renkli çubuklar",
+    ed_light: "Hafif eşik",
+    ed_moderate: "Orta eşik",
+    ed_heavy: "Şiddetli eşik",
+    ed_help: "İpucu: sensör yerine sabit sayısal eşik kullanmak için YAML düzenleyiciye geçin ve bir sayı girin (ör. light: 0.1).",
+    card_description: "ha-buienalarm entegrasyonu için yağmur tahmin kartı. Sonraki yağmur durumunu ve hafif/orta/şiddetli eşik çizgileriyle renkli bir yağış grafiğini gösterir.",
+    card_name: "BuienAlarm Kartı",
+  },
+  ar: {
+    default_title: "توقعات المطر",
+    period_wet: "زخّة متوقعة",
+    period_dry: "ستنتهي الزخّة الحالية",
+    period_nan: "لا يوجد تحول ضمن الفترة",
+    entity_not_found: "الكيان غير موجود: {entity}",
+    no_data: "لا تتوفر بيانات توقعات بعد.",
+    state_unknown: "غير معروف",
+    legend_trace: "أثر",
+    legend_light: "خفيف",
+    legend_moderate: "متوسط",
+    legend_heavy: "غزير",
+    aria_chart: "توقعات المطر",
+    unit_mmh: "مم/س",
+    ed_title: "العنوان",
+    ed_next_shower_sensor: "مستشعر الزخّة التالية",
+    ed_show_headline: "عرض العنوان",
+    ed_color_bars: "أشرطة ملوّنة",
+    ed_light: "عتبة خفيفة",
+    ed_moderate: "عتبة متوسطة",
+    ed_heavy: "عتبة غزيرة",
+    ed_help: "نصيحة: لاستخدام عتبة رقمية ثابتة بدلاً من مستشعر، انتقل إلى محرر YAML وأدخل رقمًا (مثل light: 0.1).",
+    card_description: "بطاقة توقعات المطر لتكامل ha-buienalarm. تعرض حالة الزخّة التالية ومخطط هطول ملوّن مع خطوط عتبات خفيف/متوسط/غزير.",
+    card_name: "بطاقة BuienAlarm",
+  },
+  de: {
+    default_title: "Regenvorhersage",
+    period_wet: "Schauer erwartet",
+    period_dry: "aktueller Schauer endet",
+    period_nan: "kein Übergang im Zeitfenster",
+    entity_not_found: "Entität nicht gefunden: {entity}",
+    no_data: "Noch keine Vorhersagedaten verfügbar.",
+    state_unknown: "unbekannt",
+    legend_trace: "Spur",
+    legend_light: "leicht",
+    legend_moderate: "mäßig",
+    legend_heavy: "stark",
+    aria_chart: "Regenvorhersage",
+    unit_mmh: "mm/h",
+    ed_title: "Titel",
+    ed_next_shower_sensor: "Sensor nächster Schauer",
+    ed_show_headline: "Überschrift anzeigen",
+    ed_color_bars: "Farbige Balken",
+    ed_light: "Schwelle leicht",
+    ed_moderate: "Schwelle mäßig",
+    ed_heavy: "Schwelle stark",
+    ed_help: "Tipp: Um einen festen numerischen Schwellenwert anstelle eines Sensors zu verwenden, wechsle zum YAML-Editor und gib eine Zahl ein (z. B. light: 0.1).",
+    card_description: "Regenvorhersage-Karte für die ha-buienalarm-Integration. Zeigt den Status des nächsten Schauers und ein farbiges Niederschlagsdiagramm mit Schwellenlinien für leicht/mäßig/stark.",
+    card_name: "BuienAlarm-Karte",
+  },
+  "de-ch": {
+    // Swiss German: 'ss' instead of 'ß'.
+    default_title: "Regenvorhersage",
+    period_wet: "Schauer erwartet",
+    period_dry: "aktueller Schauer endet",
+    period_nan: "kein Übergang im Zeitfenster",
+    entity_not_found: "Entität nicht gefunden: {entity}",
+    no_data: "Noch keine Vorhersagedaten verfügbar.",
+    state_unknown: "unbekannt",
+    legend_trace: "Spur",
+    legend_light: "leicht",
+    legend_moderate: "mässig",
+    legend_heavy: "stark",
+    aria_chart: "Regenvorhersage",
+    unit_mmh: "mm/h",
+    ed_title: "Titel",
+    ed_next_shower_sensor: "Sensor nächster Schauer",
+    ed_show_headline: "Überschrift anzeigen",
+    ed_color_bars: "Farbige Balken",
+    ed_light: "Schwelle leicht",
+    ed_moderate: "Schwelle mässig",
+    ed_heavy: "Schwelle stark",
+    ed_help: "Tipp: Um einen festen numerischen Schwellenwert anstelle eines Sensors zu verwenden, wechsle zum YAML-Editor und gib eine Zahl ein (z. B. light: 0.1).",
+    card_description: "Regenvorhersage-Karte für die ha-buienalarm-Integration. Zeigt den Status des nächsten Schauers und ein farbiges Niederschlagsdiagramm mit Schwellenlinien für leicht/mässig/stark.",
+    card_name: "BuienAlarm-Karte",
+  },
+};
+
+/**
+ * Resolve a language code to its translation bundle.
+ * Mirrors resolve_language() in the integration: case-insensitive, with
+ * fallback to the base language (e.g. "de-CH" -> "de") and finally to "en".
+ */
+function resolveTranslations(language) {
+  if (!language || typeof language !== "string") return TRANSLATIONS.en;
+  const code = language.toLowerCase();
+  if (TRANSLATIONS[code]) return TRANSLATIONS[code];
+  const base = code.split("-", 1)[0];
+  if (TRANSLATIONS[base]) return TRANSLATIONS[base];
+  return TRANSLATIONS.en;
+}
+
+/**
+ * Pick the active language from a hass object. Prefer the explicit
+ * locale.language (the user's selected HA UI language); fall back to the
+ * deprecated hass.language; default to "en".
+ */
+function pickLanguage(hass) {
+  if (!hass) return "en";
+  return (hass.locale && hass.locale.language) || hass.language || "en";
+}
+
+/**
+ * Look up a translation key with optional placeholder substitution.
+ * Falls back to the English bundle if the key is missing in the active
+ * language, then to the key itself if even English doesn't have it. This
+ * makes adding a new key safe for partially-translated bundles.
+ */
+function t(strings, key, params) {
+  let template;
+  if (strings && Object.prototype.hasOwnProperty.call(strings, key)) {
+    template = strings[key];
+  } else if (Object.prototype.hasOwnProperty.call(TRANSLATIONS.en, key)) {
+    template = TRANSLATIONS.en[key];
+  } else {
+    template = key;
+  }
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (m, name) =>
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : m
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -131,7 +474,11 @@ class BuienalarmCard extends HTMLElement {
     }
 
     this._config = {
-      title: config.title ?? "Rain forecast",
+      // Note: title default is intentionally left undefined here so it
+      // can resolve to the translated string at render time, following
+      // the user's HA UI language. An explicit empty string still hides
+      // the title; an explicit non-empty string still wins.
+      title: config.title,
       show_headline: config.show_headline !== false,
       color_bars: config.color_bars !== false,
       next_shower_sensor: config.next_shower_sensor,
@@ -273,15 +620,18 @@ class BuienalarmCard extends HTMLElement {
     if (!this._root || !this._config || !this._hass) return;
     const cfg = this._config;
     const hass = this._hass;
+    const strings = resolveTranslations(pickLanguage(hass));
 
-    // Title
-    this._titleEl.textContent = cfg.title || "";
-    this._titleEl.style.display = cfg.title ? "" : "none";
+    // Title — explicit user value wins (including empty string to hide);
+    // unset falls back to the translated default.
+    const title = cfg.title === undefined ? t(strings, "default_title") : cfg.title;
+    this._titleEl.textContent = title || "";
+    this._titleEl.style.display = title ? "" : "none";
 
     const stateObj = hass.states[cfg.next_shower_sensor];
     if (!stateObj) {
       this._headlineEl.innerHTML =
-        `<div class="ba-error">Entity not found: ${esc(cfg.next_shower_sensor)}</div>`;
+        `<div class="ba-error">${esc(t(strings, "entity_not_found", { entity: cfg.next_shower_sensor }))}</div>`;
       this._chartEl.innerHTML = "";
       return;
     }
@@ -293,12 +643,16 @@ class BuienalarmCard extends HTMLElement {
 
     // Headline
     if (cfg.show_headline) {
+      // The state value itself is translated server-side by the
+      // integration (it follows the per-entry `language` setting), so
+      // we display it as-is. Only the period sub-text is translated
+      // client-side here.
       const state = stateObj.state;
       const sub = stateObj.attributes && stateObj.attributes.period_type
-        ? this._subForPeriod(stateObj.attributes.period_type)
+        ? this._subForPeriod(stateObj.attributes.period_type, strings)
         : "";
       this._headlineEl.innerHTML = `
-        <span class="ba-state">${esc(state || "unknown")}</span>
+        <span class="ba-state">${esc(state || t(strings, "state_unknown"))}</span>
         ${sub ? `<span class="ba-sub">${esc(sub)}</span>` : ""}
       `;
       this._headlineEl.style.display = "";
@@ -310,18 +664,18 @@ class BuienalarmCard extends HTMLElement {
     const forecast = (stateObj.attributes && stateObj.attributes.rain_forecast) || [];
     if (!Array.isArray(forecast) || forecast.length === 0) {
       this._chartEl.innerHTML =
-        `<div class="ba-error">No forecast data available yet.</div>`;
+        `<div class="ba-error">${esc(t(strings, "no_data"))}</div>`;
       return;
     }
 
-    this._chartEl.innerHTML = this._renderChart(forecast, light, moderate, heavy);
+    this._chartEl.innerHTML = this._renderChart(forecast, light, moderate, heavy, strings);
   }
 
-  _subForPeriod(period) {
+  _subForPeriod(period, strings) {
     switch (period) {
-      case "wet": return "shower expected";
-      case "dry": return "current shower will end";
-      case "nan": return "no transition in window";
+      case "wet": return t(strings, "period_wet");
+      case "dry": return t(strings, "period_dry");
+      case "nan": return t(strings, "period_nan");
       default: return "";
     }
   }
@@ -330,7 +684,7 @@ class BuienalarmCard extends HTMLElement {
    * Render the SVG chart. Built as a string and assigned via innerHTML —
    * cheaper than the DOM API and trivially garbage-collected on re-render.
    */
-  _renderChart(forecast, light, moderate, heavy) {
+  _renderChart(forecast, light, moderate, heavy, strings) {
     const cfg = this._config;
 
     // Geometry
@@ -417,7 +771,7 @@ class BuienalarmCard extends HTMLElement {
     // Y axis: top label
     const yAxis = `
       <text x="${padL - 4}" y="${(padT - 2).toFixed(2)}" text-anchor="end"
-            font-size="9" fill="var(--secondary-text-color, #777)">${yMax.toFixed(1)} mm/h</text>
+            font-size="9" fill="var(--secondary-text-color, #777)">${esc(yMax.toFixed(1) + " " + t(strings, "unit_mmh"))}</text>
       <text x="${padL - 4}" y="${(padT + plotH - 1).toFixed(2)}" text-anchor="end"
             font-size="9" fill="var(--secondary-text-color, #777)">0</text>
     `;
@@ -429,10 +783,10 @@ class BuienalarmCard extends HTMLElement {
     let legend = "";
     if (cfg.color_bars) {
       const items = [
-        ["trace", "trace"],
-        ["light", "light"],
-        ["moderate", "moderate"],
-        ["heavy", "heavy"],
+        ["trace", t(strings, "legend_trace")],
+        ["light", t(strings, "legend_light")],
+        ["moderate", t(strings, "legend_moderate")],
+        ["heavy", t(strings, "legend_heavy")],
       ];
       legend =
         `<div class="ba-legend">` +
@@ -447,7 +801,7 @@ class BuienalarmCard extends HTMLElement {
 
     return `
       <svg class="ba-chart" viewBox="0 0 ${W} ${H}"
-           xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rain forecast"
+           xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(t(strings, "aria_chart"))}"
            preserveAspectRatio="none">
         ${baseline}
         ${yAxis}
@@ -551,16 +905,18 @@ class BuienalarmCardEditor extends HTMLElement {
 
   /**
    * Provide nicer labels for fields. ha-form calls this per-field.
+   * Labels follow the active HA UI language.
    */
   _computeLabel(field) {
+    const strings = resolveTranslations(pickLanguage(this._hass));
     switch (field.name) {
-      case "title": return "Title";
-      case "next_shower_sensor": return "Next shower sensor";
-      case "show_headline": return "Show headline";
-      case "color_bars": return "Color bars";
-      case "light": return "Light threshold";
-      case "moderate": return "Moderate threshold";
-      case "heavy": return "Heavy threshold";
+      case "title": return t(strings, "ed_title");
+      case "next_shower_sensor": return t(strings, "ed_next_shower_sensor");
+      case "show_headline": return t(strings, "ed_show_headline");
+      case "color_bars": return t(strings, "ed_color_bars");
+      case "light": return t(strings, "ed_light");
+      case "moderate": return t(strings, "ed_moderate");
+      case "heavy": return t(strings, "ed_heavy");
       default: return field.name;
     }
   }
@@ -618,8 +974,9 @@ class BuienalarmCardEditor extends HTMLElement {
 
       const help = document.createElement("div");
       help.className = "ba-ed-help";
-      help.textContent =
-        "Tip: to use a fixed numeric threshold instead of a sensor, switch to the YAML editor and enter a number (e.g. light: 0.1).";
+      // Help text is filled in below on every render so it follows the
+      // active HA UI language (and updates if the user changes locale
+      // while the editor is open).
 
       wrap.appendChild(form);
       wrap.appendChild(help);
@@ -630,6 +987,9 @@ class BuienalarmCardEditor extends HTMLElement {
       this._form = form;
       this._help = help;
     }
+
+    const strings = resolveTranslations(pickLanguage(this._hass));
+    this._help.textContent = t(strings, "ed_help");
 
     this._form.hass = this._hass;
     this._form.schema = this._schema();
@@ -719,12 +1079,18 @@ if (!customElements.get("buienalarm-card")) {
 
 window.customCards = window.customCards || [];
 if (!window.customCards.find((c) => c.type === "buienalarm-card")) {
+  // The card picker runs before any hass is available, so we use the
+  // browser locale here as a best-effort. HA itself doesn't pass the
+  // user's locale into customCards entries; once a card is added, the
+  // editor and the rendered card both follow hass.locale.language.
+  const pickerStrings = resolveTranslations(
+    (typeof navigator !== "undefined" && navigator.language) || "en"
+  );
   window.customCards.push({
     type: "buienalarm-card",
-    name: "BuienAlarm Card",
+    name: t(pickerStrings, "card_name"),
     preview: false,
-    description:
-      "Rain forecast card for the ha-buienalarm integration. Shows the next-shower status and a coloured precipitation chart with light/moderate/heavy threshold lines.",
+    description: t(pickerStrings, "card_description"),
     documentationURL: "https://github.com/lancer73/ha-buienalarm",
   });
 }

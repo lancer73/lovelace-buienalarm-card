@@ -5,6 +5,43 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - unreleased
+
+### Added
+
+- **Localisation**: the card now translates its own UI strings (default
+  title, period sub-text, editor field labels and help tip, legend
+  labels, error and empty-state messages, mm/h unit) into the same set
+  of languages the `ha-buienalarm` integration supports: `en`, `nl`,
+  `fr`, `es`, `pt`, `pt-br`, `fy`, `tr`, `ar`, `de`, `de-ch`. Language
+  is picked from `hass.locale.language` with case-insensitive lookup,
+  base-language fallback (`de-CH` → `de`), and final fallback to
+  English. The card-picker entry in the "Add card" dialog uses
+  `navigator.language` as a best-effort.
+- **`Localisation` section in README** describing the supported
+  languages, how language is picked, and how to contribute corrections.
+
+### Changed
+
+- **Default title** is no longer hard-coded to `"Rain forecast"`. When
+  the YAML doesn't specify `title`, the card now picks the translated
+  default for the active HA UI language at render time. Existing configs
+  with an explicit `title:` are unaffected. An explicit empty string
+  still hides the title. The only behavioural difference is for configs
+  that explicitly write `title: null` / `title: ~` in YAML — that
+  previously fell through to the default and now hides the title (a
+  more intuitive reading of "explicit null").
+- The next-shower state text remains translated server-side by the
+  integration (driven by its `language` config option) and is displayed
+  as-is by the card; the card's own UI language is independent.
+
+### Notes
+
+- Translations for languages other than English and Dutch are
+  machine-quality starting points and have not been reviewed by native
+  speakers. Native-speaker PRs are welcome — strings live in the
+  `TRANSLATIONS` object at the top of `buienalarm-card.js`.
+
 ## [1.1.1] - 2026-04-25
 
 First public release as a standalone HACS-distributable card. Previously

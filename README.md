@@ -120,6 +120,33 @@ points covering the forecast window.
 - **Y-axis** auto-scales to `max(heavy × 1.2, observed peak, 0.5)` so the
   chart still has shape on dry days.
 
+## Localisation
+
+The card translates its own UI (default title, period sub-text, editor
+labels, legend, error and empty states) into the same set of languages
+the `ha-buienalarm` integration supports:
+
+`en`, `nl`, `fr`, `es`, `pt`, `pt-br`, `fy`, `tr`, `ar`, `de`, `de-ch`.
+
+Language is picked from `hass.locale.language` (the user's Home Assistant
+UI language). Lookup is case-insensitive and falls back to the base
+language (`de-CH` → `de`) and then to English. Unknown locales fall back
+to English.
+
+Two notes on what is **not** controlled by the HA UI language:
+
+- The next-shower **state value itself** (e.g. `over 30 minuten` /
+  `in 30 minutes`) is rendered server-side by the integration and follows
+  its own `language` config option, set when you configure the
+  integration. The card displays that value as-is.
+- Entity *names* (the labels Home Assistant shows for each sensor) follow
+  the HA UI language via the integration's `translations/*.json` files,
+  not the card.
+
+Native-speaker corrections are welcome — open a PR against
+`buienalarm-card.js`; the strings live in the `TRANSLATIONS` object near
+the top of the file.
+
 ## Privacy
 
 - No external network calls. The card reads exclusively from the local
